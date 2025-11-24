@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web非线性视频编辑器 v8 - 范围导出版</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="upper-area">
+        <div class="preview-box">
+            <canvas id="editorCanvas"></canvas>
+            <div id="placeholder" style="position:absolute; color:#64748b;">请在右侧上传视频片段</div>
+        </div>
+
+        <div class="controls">
+            <div>
+                <h3>1. 视频素材库</h3>
+                <div class="form-row">
+                    <button onclick="document.getElementById('videoUploader').click()" style="width:100%">+ 添加视频片段</button>
+                    <input type="file" id="videoUploader" accept="video/*" multiple style="display:none">
+                </div>
+            </div>
+
+            <div id="imgControlPanel">
+                <h3 class="green-title">2. 图片贴纸 <span class="selection-hint">(已选中)</span></h3>
+                <div class="form-row">
+                    <button class="green" onclick="document.getElementById('imgUploader').click()" style="flex:1">+ 添加图片</button>
+                    <button class="red" id="delImgBtn" style="width:40px">🗑️</button>
+                    <input type="file" id="imgUploader" accept="image/*" style="display:none">
+                </div>
+                <div id="activeImgControls" class="disabled-overlay">
+                    <div class="form-row">
+                        <div class="form-col"><label>缩放</label><input type="range" id="imgScale" min="0.1" max="3" step="0.1" value="1"></div>
+                        <div class="form-col"><label>透明度</label><input type="range" id="imgOpacity" min="0" max="1" step="0.1" value="1"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col"><label>开始</label><input type="number" id="imgStart" step="0.1"></div>
+                        <div class="form-col"><label>结束</label><input type="number" id="imgEnd" step="0.1"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="textControlPanel">
+                <h3 class="pink-title">3. 字幕文字 <span class="selection-hint">(已选中)</span></h3>
+                <div class="form-row">
+                    <button class="pink" id="addTxtBtn" style="flex:1">+ 添加文字</button>
+                    <button class="red" id="delTxtBtn" style="width:40px">🗑️</button>
+                </div>
+                <div id="activeTxtControls" class="disabled-overlay">
+                    <div class="form-row"><input type="text" id="txtContent" placeholder="输入文字"></div>
+                    <div class="form-row">
+                        <div class="form-col"><label>字号</label><input type="number" id="txtSize"></div>
+                        <div class="form-col"><label>颜色</label><input type="color" id="txtColor"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col"><label>开始</label><input type="number" id="txtStart" step="0.1"></div>
+                        <div class="form-col"><label>结束</label><input type="number" id="txtEnd" step="0.1"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="audioControlPanel">
+                <h3 class="yellow-title" style="color: #facc15;">4. 背景音乐 <span class="selection-hint">(已选中)</span></h3>
+                <div class="form-row">
+                    <button class="yellow" style="background:#eab308; flex:1" onclick="document.getElementById('audioFileUploader').click()">+ 上传音乐</button>
+                    <button class="red" id="delAudioBtn" style="width:40px">🗑️</button>
+                    <input type="file" id="audioFileUploader" accept="audio/*" style="display:none">
+                </div>
+                <div id="activeAudioControls" class="disabled-overlay">
+                    <div class="form-row">
+                        <div class="form-col"><label>开始时间(s)</label><input type="number" id="audioStart" step="0.1"></div>
+                        <div class="form-col"><label>音量(0-2)</label><input type="range" id="audioVol" min="0" max="2" step="0.1" value="1"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="exportControlPanel">
+                <h3 class="purple-title">5. 导出设置</h3>
+                <div class="form-row">
+                    <div class="form-col">
+                        <label>导出开始 (秒)</label>
+                        <input type="number" id="expStart" value="0" step="0.1">
+                    </div>
+                    <div class="form-col">
+                        <label>导出结束 (秒)</label>
+                        <input type="number" id="expEnd" value="0" step="0.1">
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:auto; display:flex; flex-direction:column; gap:10px;">
+                <div class="form-row">
+                    <button id="playBtn" style="flex:1" disabled>播放</button>
+                    <button id="exportBtn" class="red" style="flex:1" disabled>导出范围视频</button>
+                </div>
+                <div id="status" style="text-align:center; font-size:0.8rem; color:var(--active)">等待素材...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-area">
+        <div class="timeline-wrapper" id="timelineWrapper">
+            <canvas id="timelineCanvas"></canvas>
+        </div>
+        <div class="clip-list" id="clipListContainer"></div>
+    </div>
+
+    <video id="sourceVideo" playsinline muted crossorigin="anonymous"></video>
+
+    <script src="editor.js"></script>
+</body>
+</html>
